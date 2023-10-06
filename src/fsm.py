@@ -39,7 +39,7 @@ def concat(r1,r2):
   onset = r1.final
   closure = r2.start
 
-  nfa = Fsm(r1.sigma + r2.sigma, r1.states + r2.states, r1.start, r2.final, r1.transitions + r2.transitions)
+  nfa = Fsm(list(set(r1.sigma).union(set(r2.sigma))), r1.states + r2.states, r1.start, r2.final, r1.transitions + r2.transitions)
 
   for o in onset:
     nfa.transitions.append((o, "epsilon", closure))
@@ -50,7 +50,7 @@ def concat(r1,r2):
 def union(r1,r2):
   union_state = fresh()
 
-  nfa = Fsm(r1.sigma + r2.sigma, r1.states + r2.states, r1.start, r1.final + r2.final, r1.transitions + r2.transitions)
+  nfa = Fsm(list(set(r1.sigma).union(set(r2.sigma))), r1.states + r2.states, r1.start, r1.final + r2.final, r1.transitions + r2.transitions)
 
   nfa.states.append(union_state)
   nfa.start = union_state
@@ -137,6 +137,8 @@ def accept(nfa,string):
   path = []
 
   for s in string:
+    if(s not in dfa.sigma):
+      return False
     path = move(s, [curr], dfa)
     if(path):
       curr = path[0]
